@@ -360,12 +360,13 @@
       <div class="section">
         <h3>الشرائح الضريبية</h3>
         <div id="taxContainer">
-          <div class="tax-row"><input type="number" value="0" /><input type="number" value="15000" /><input type="number" value="0" /></div>
-          <div class="tax-row"><input type="number" value="15001" /><input type="number" value="30000" /><input type="number" value="10" /></div>
-          <div class="tax-row"><input type="number" value="30001" /><input type="number" value="45000" /><input type="number" value="15" /></div>
-          <div class="tax-row"><input type="number" value="45001" /><input type="number" value="60000" /><input type="number" value="20" /></div>
-          <div class="tax-row"><input type="number" value="60001" /><input type="number" value="200000" /><input type="number" value="22.5" /></div>
-          <div class="tax-row"><input type="number" value="200001" /><input type="number" value="9999999" /><input type="number" value="27.5" /></div>
+          <div class="tax-row"><input type="number" value="0" /><input type="number" value="40000" /><input type="number" value="0" /></div>
+          <div class="tax-row"><input type="number" value="40001" /><input type="number" value="55000" /><input type="number" value="10" /></div>
+          <div class="tax-row"><input type="number" value="55001" /><input type="number" value="70000" /><input type="number" value="15" /></div>
+          <div class="tax-row"><input type="number" value="70001" /><input type="number" value="200000" /><input type="number" value="20" /></div>
+          <div class="tax-row"><input type="number" value="200001" /><input type="number" value="400000" /><input type="number" value="22.5" /></div>
+          <div class="tax-row"><input type="number" value="400001" /><input type="number" value="1200000" /><input type="number" value="25" /></div>
+          <div class="tax-row"><input type="number" value="1200001" /><input type="number" value="9999999" /><input type="number" value="27.5" /></div>
         </div>
         <button class="add-btn" onclick="addTaxBracket()"><i class="fas fa-plus"></i> إضافة شريحة</button>
       </div>
@@ -478,12 +479,13 @@
     } else {
       // Default tax brackets if none saved
       const defaultBrackets = [
-        { min: 0, max: 15000, rate: 0 },
-        { min: 15001, max: 30000, rate: 10 },
-        { min: 30001, max: 45000, rate: 15 },
-        { min: 45001, max: 60000, rate: 20 },
-        { min: 60001, max: 200000, rate: 22.5 },
-        { min: 200001, max: 9999999, rate: 27.5 }
+        { min: 0, max: 40000, rate: 0 },
+        { min: 40001, max: 55000, rate: 10 },
+        { min: 55001, max: 70000, rate: 15 },
+        { min: 70001, max: 200000, rate: 20 },
+        { min: 200001, max: 400000, rate: 22.5 },
+        { min: 400001, max: 1200000, rate: 25 },
+        { min: 1200001, max: 9999999, rate: 27.5 }
       ];
       
       defaultBrackets.forEach(bracket => {
