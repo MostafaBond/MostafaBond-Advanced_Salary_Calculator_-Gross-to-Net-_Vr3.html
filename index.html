@@ -1,563 +1,740 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حاسبة الراتب من الشامل إلى الصافي</title>
+  <meta charset="UTF-8">
+  <title>حاسبة المرتب</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .header-section {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            margin-bottom: 2px;
-        }
-        .tax-bands-section {
-            background-color: #222;
-            color: #00ff00;
-            padding: 20px;
-            border-radius: 0 0 10px 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        .result-section {
-            background-color: #f5e5d9;
-            color: black;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-            text-align: center;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        .radio-option {
-            display: flex;
-            align-items: center;
-        }
-        .radio-option input {
-            width: auto;
-            margin-left: 5px;
-        }
-        .tax-band {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        .tax-band input {
-            flex: 1;
-        }
-        .add-band-btn {
-            background-color: #333;
-            color: #00ff00;
-            padding: 8px;
-            margin-top: 5px;
-        }
-        .exemption-item {
-            margin-bottom: 10px;
-            padding: 10px;
-            background-color: #333;
-            border-radius: 5px;
-        }
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-label input {
-            width: auto;
-            margin-left: 10px;
-        }
-        .remember-settings {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #444;
-            border-radius: 5px;
-        }
-        .social-insurance {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #333;
-            border-radius: 5px;
-        }
-    </style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      direction: rtl;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .section {
+      background: white;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .section h3 {
+      color: #4a5568;
+      margin-bottom: 1.5rem;
+      font-size: 1.3rem;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 0.5rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 1rem 1.5rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+    }
+
+    .radio-option:hover {
+      background: #e3f2fd;
+      border-color: #2196f3;
+    }
+
+    .radio-option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #2196f3;
+    }
+
+    .radio-option.checked {
+      background: #e3f2fd;
+      border-color: #2196f3;
+      color: #1976d2;
+      font-weight: bold;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #4a5568;
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+      margin-bottom: 1rem;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+      background: white;
+    }
+
+    button {
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #2196f3, #1976d2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+      margin: 0.5rem;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(33, 150, 243, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button i {
+      margin-left: 0.5rem;
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, #4caf50, #45a049);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .add-btn:hover {
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .calc-btn {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+      font-size: 1.2rem;
+      padding: 1.2rem 3rem;
+    }
+
+    .calc-btn:hover {
+      box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
+    }
+
+    .details-btn {
+      background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+      box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+    }
+
+    .details-btn:hover {
+      box-shadow: 0 8px 25px rgba(156, 39, 176, 0.4);
+    }
+
+    .tax-row, .exemption-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .tax-row input, .exemption-row input {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .annual-label {
+      color: #f44336;
+      font-weight: bold;
+      background: #ffebee;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      border: 2px solid #ffcdd2;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    #resultSection {
+      background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+      border: 2px solid #4caf50;
+    }
+
+    #finalResult {
+      text-align: center;
+      font-size: 1.8rem;
+      color: #2e7d32;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    #breakdown {
+      background: #f5f5f5;
+      padding: 1.5rem;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border: 1px solid #ddd;
+      margin-bottom: 1rem;
+    }
+
+    canvas {
+      max-width: 100%;
+      margin: 1rem 0;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .download-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .pdf-btn {
+      background: linear-gradient(135deg, #f44336, #d32f2f);
+      box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+    }
+
+    .pdf-btn:hover {
+      box-shadow: 0 8px 25px rgba(244, 67, 54, 0.4);
+    }
+
+    .excel-btn {
+      background: linear-gradient(135deg, #4caf50, #388e3c);
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    }
+
+    .excel-btn:hover {
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+
+    .advanced-settings {
+      display: none;
+    }
+
+    .toggle-advanced {
+      background: linear-gradient(135deg, #607d8b, #455a64);
+      box-shadow: 0 4px 15px rgba(96, 125, 139, 0.3);
+    }
+
+    .toggle-advanced:hover {
+      box-shadow: 0 8px 25px rgba(96, 125, 139, 0.4);
+    }
+
+    .remember-settings {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.5rem;
+      background: #f8f9fa;
+      border-radius: 5px;
+    }
+
+    .remember-settings input {
+      width: auto;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .section {
+        padding: 1.5rem;
+      }
+      
+      .radio-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="header-section">
-        <h1>حاسبة الضرائب المصرية المتقدمة</h1>
- <footer style="
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-">
-    <p style="
-        margin-bottom: 10px;
-        color: #333;
-        font-size: 16px;
-    ">تصميم/ مصطفى الحسانين  - الموقع الألكتروني الشخصي</p>
-    <nav>
-        <a href="https://mostafabond.github.io/HRNINJA/index-ar.html" style="
-            display: inline-block;
-            padding: 8px 20px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        ">HR Ninja</a>
-    </nav>
-</footer>
-<title>( من الشامل إلى الصافي)</title>
-<h2 style="color: #00ff00;">صممت بتاريخ 3-يونيو -2025 برجاء مراعاة أي تحديثات فى الشرائح و نسب  الضرية و الأستقطاعات </h2>
+  <div class="container">
+    <h1>حاسبة المرتب - الشامل والصافي</h1>
 
-        
-        <div class="input-group">
-            <label for="income">مبلغ الدخل:</label>
-            <input type="number" id="income" placeholder="أدخل المبلغ">
-        </div>
-        
-        <div class="input-group">
-            <label>نوع الدخل:</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="monthly" name="incomeType" value="monthly" checked>
-                    <label for="monthly">شهري</label>
-                </div>
-                <div class="radio-option">
-                    <input type="radio" id="yearly" name="incomeType" value="yearly">
-                    <label for="yearly">سنوي</label>
-                </div>
-            </div>
-        </div>
-        
-        <button onclick="calculateTax()">حساب الضريبة</button>
+    <div class="section">
+      <label><input type="radio" name="calcType" value="toNet" checked> من الشامل إلى الصافي</label>
+      <label><input type="radio" name="calcType" value="toGross"> من الصافي إلى الشامل</label>
     </div>
-    
-    <div class="tax-bands-section">
-        <h2 style="color: #00ff00;">شرائح الضرائب والإعفاءات</h2>
-  <h2 style="color: #00ff00;">حتي تاريخ التصميم 6-يونيو-2025 برجاء مراعاة أي تحديثات فى الشرائح و نسب  الضرية و الأستقطاعات</h2>
-        
-        <div id="taxBandsContainer">
-            <!-- الشرائح الضريبية -->
-            <div class="tax-band">
-                <input type="number" class="band-from" value="0" placeholder="من">
-                <input type="number" class="band-to" value="15000" placeholder="إلى">
-                <input type="number" class="band-rate" value="0" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="15001" placeholder="من">
-                <input type="number" class="band-to" value="30000" placeholder="إلى">
-                <input type="number" class="band-rate" value="2.5" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="30001" placeholder="من">
-                <input type="number" class="band-to" value="45000" placeholder="إلى">
-                <input type="number" class="band-rate" value="10" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="45001" placeholder="من">
-                <input type="number" class="band-to" value="60000" placeholder="إلى">
-                <input type="number" class="band-rate" value="15" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="60001" placeholder="من">
-                <input type="number" class="band-to" value="200000" placeholder="إلى">
-                <input type="number" class="band-rate" value="20" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="200001" placeholder="من">
-                <input type="number" class="band-to" value="400000" placeholder="إلى">
-                <input type="number" class="band-rate" value="22.5" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-            <div class="tax-band">
-                <input type="number" class="band-from" value="400001" placeholder="من">
-                <input type="number" class="band-to" value="999999999" placeholder="إلى">
-                <input type="number" class="band-rate" value="25" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-            </div>
-        </div>
-        
-        <button class="add-band-btn" onclick="addTaxBand()">+ إضافة شريحة ضريبية جديدة</button>
-        
-        <h3 style="color: #00ff00; margin-top: 20px;">الإعفاءات الضريبية:</h3>
-  <h2 style="color: #00ff00;">حتي تاريخ التصميم 6-يونيو-2025 برجاء مراعاة أي تحديثات فى الشرائح و نسب  الضرية و الأستقطاعات</h2>
-        
+
+    <div class="section">
+      <label id="salaryLabel">الراتب الشهري:</label>
+      <input type="number" id="monthlySalary" />
+    </div>
+
+    <div class="section" style="text-align:center;">
+      <button class="toggle-advanced" onclick="toggleAdvancedSettings()"><i class="fas fa-cog"></i> إعدادات متقدمة</button>
+      <div class="remember-settings">
+        <input type="checkbox" id="rememberSettings" checked>
+        <label for="rememberSettings">تذكر الأرقام</label>
+      </div>
+    </div>
+
+    <div id="advancedSettings" class="advanced-settings">
+      <div class="section">
+        <h3>التأمينات الاجتماعية</h3>
+        <label>الحد الأدنى:</label>
+        <input type="number" id="insuranceMin" value="2300" />
+        <label>الحد الأقصى:</label>
+        <input type="number" id="insuranceMax" value="14500" />
+        <label>نسبة الاستقطاع (%):</label>
+        <input type="number" id="insuranceRate" value="11" />
+      </div>
+
+      <div class="section">
+        <h3>الإعفاءات</h3>
         <div id="exemptionsContainer">
-            <div class="exemption-item">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="basicExemption" checked>
-                    <span style="color: #00ff00;">الإعفاء الأساسي (15,000 جنيه سنوياً)</span>
-                </label>
-                <input type="number" id="basicExemptionAmount" value="15000" style="margin-top: 5px;">
-            </div>
-            
-            <div class="exemption-item">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="socialExemption" checked>
-                    <span style="color: #00ff00;">إعفاء التأمينات الاجتماعية (7,000 جنيه سنوياً)</span>
-                </label>
-                <input type="number" id="socialExemptionAmount" value="7000" style="margin-top: 5px;">
-            </div>
-            
-            <div class="exemption-item">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="transportExemption">
-                    <span style="color: #00ff00;">بدل انتقال (7,000 جنيه سنوياً)</span>
-                </label>
-                <input type="number" id="transportExemptionAmount" value="7000" style="margin-top: 5px;">
-            </div>
-            
-            <div class="exemption-item">
-                <label class="checkbox-label">
-                    <input type="checkbox" id="housingExemption">
-                    <span style="color: #00ff00;">بدل سكن (10,000 جنيه سنوياً أو 50% من الدخل أيهما أقل)</span>
-                </label>
-                <input type="number" id="housingExemptionAmount" value="10000" style="margin-top: 5px;">
-            </div>
+          <div class="exemption-row">
+            <input type="number" placeholder="الإعفاء السنوي (جنيه)" value="15000" />
+            <span class="annual-label">سنوية</span>
+          </div>
         </div>
-        
-        <button class="add-band-btn" onclick="addExemption()">+ إضافة إعفاء جديد</button>
-        
-        <div class="social-insurance">
-            <h3 style="color: #00ff00;">التأمينات الاجتماعية:</h3>
-            <div class="input-group">
-                <label style="color: #00ff00;">حد أدنى للأجور:</label>
-                <input type="number" id="minSalary" value="3000">
-            </div>
-            <div class="input-group">
-                <label style="color: #00ff00;">حد أقصى للتأمينات:</label>
-                <input type="number" id="maxInsurance" value="9400">
-            </div>
-            <div class="input-group">
-                <label style="color: #00ff00;">نسبة استقطاع الموظف %:</label>
-                <input type="number" id="employeeRate" value="11">
-            </div>
+        <button class="add-btn" onclick="addExemptionField()"><i class="fas fa-plus"></i> إضافة إعفاء</button>
+      </div>
+
+      <div class="section">
+        <h3>الشرائح الضريبية</h3>
+        <div id="taxContainer">
+          <div class="tax-row"><input type="number" value="0" /><input type="number" value="15000" /><input type="number" value="0" /></div>
+          <div class="tax-row"><input type="number" value="15001" /><input type="number" value="30000" /><input type="number" value="10" /></div>
+          <div class="tax-row"><input type="number" value="30001" /><input type="number" value="45000" /><input type="number" value="15" /></div>
+          <div class="tax-row"><input type="number" value="45001" /><input type="number" value="60000" /><input type="number" value="20" /></div>
+          <div class="tax-row"><input type="number" value="60001" /><input type="number" value="200000" /><input type="number" value="22.5" /></div>
+          <div class="tax-row"><input type="number" value="200001" /><input type="number" value="9999999" /><input type="number" value="27.5" /></div>
         </div>
-        
-        <div class="remember-settings">
-            <label class="checkbox-label">
-                <input type="checkbox" id="rememberSettings">
-                <span style="color: #00ff00;">تذكر هذه الإعدادات لزياراتي القادمة</span>
-            </label>
-        </div>
-    </div>
-    
-    <div id="result" class="result-section">
-        <h2>تقرير الضريبة</h2>
-        <div id="resultContent"></div>
+        <button class="add-btn" onclick="addTaxBracket()"><i class="fas fa-plus"></i> إضافة شريحة</button>
+      </div>
     </div>
 
-    <script>
-        // إضافة شريحة ضريبية جديدة
-        function addTaxBand() {
-            const container = document.getElementById('taxBandsContainer');
-            const newBand = document.createElement('div');
-            newBand.className = 'tax-band';
-            newBand.innerHTML = `
-                <input type="number" class="band-from" placeholder="من">
-                <input type="number" class="band-to" placeholder="إلى">
-                <input type="number" class="band-rate" placeholder="النسبة %">
-                <span style="color: #00ff00;">%</span>
-                <button onclick="this.parentElement.remove()" style="background-color: #ff0000; padding: 5px; width: auto;">×</button>
-            `;
-            container.appendChild(newBand);
-        }
-        
-        // إضافة إعفاء جديد
-        function addExemption() {
-            const container = document.getElementById('exemptionsContainer');
-            const newExemption = document.createElement('div');
-            newExemption.className = 'exemption-item';
-            newExemption.innerHTML = `
-                <label class="checkbox-label">
-                    <input type="checkbox" checked>
-                    <span style="color: #00ff00;">إعفاء جديد:</span>
-                </label>
-                <input type="text" placeholder="وصف الإعفاء" style="margin-top: 5px; width: 100%;">
-                <input type="number" placeholder="قيمة الإعفاء" style="margin-top: 5px; width: 100%;">
-                <button onclick="this.parentElement.remove()" style="background-color: #ff0000; padding: 5px; margin-top: 5px; width: auto;">× حذف هذا الإعفاء</button>
-            `;
-            container.appendChild(newExemption);
-        }
-        
-        // حساب الضريبة
-        function calculateTax() {
-            // الحصول على القيم المدخلة
-            let income = parseFloat(document.getElementById('income').value);
-            const incomeType = document.querySelector('input[name="incomeType"]:checked').value;
-            
-            // تحويل الدخل إلى سنوي إذا كان شهرياً
-            if (incomeType === 'monthly') {
-                income = income * 12;
-            }
-            
-            if (isNaN(income)) {
-                alert("الرجاء إدخال مبلغ الدخل");
-                return;
-            }
-            
-            // جمع الشرائح الضريبية
-            const bands = [];
-            const bandElements = document.querySelectorAll('.tax-band');
-            bandElements.forEach(band => {
-                const from = parseFloat(band.querySelector('.band-from').value) || 0;
-                const to = parseFloat(band.querySelector('.band-to').value) || 0;
-                const rate = parseFloat(band.querySelector('.band-rate').value) || 0;
-                
-                if (!isNaN(from) && !isNaN(to) && !isNaN(rate)) {
-                    bands.push({ from, to, rate });
-                }
-            });
-            
-            // ترتيب الشرائح تصاعدياً
-            bands.sort((a, b) => a.from - b.from);
-            
-            // حساب الإعفاءات
-            let totalExemptions = 0;
-            
-            // الإعفاء الأساسي
-            if (document.getElementById('basicExemption').checked) {
-                totalExemptions += parseFloat(document.getElementById('basicExemptionAmount').value) || 0;
-            }
-            
-            // إعفاء التأمينات الاجتماعية
-            if (document.getElementById('socialExemption').checked) {
-                totalExemptions += parseFloat(document.getElementById('socialExemptionAmount').value) || 0;
-            }
-            
-            // إعفاء بدل الانتقال
-            if (document.getElementById('transportExemption').checked) {
-                totalExemptions += parseFloat(document.getElementById('transportExemptionAmount').value) || 0;
-            }
-            
-            // إعفاء بدل السكن
-            if (document.getElementById('housingExemption').checked) {
-                const housingAmount = parseFloat(document.getElementById('housingExemptionAmount').value) || 0;
-                const housingExemption = Math.min(housingAmount, income * 0.5);
-                totalExemptions += housingExemption;
-            }
-            
-            // حساب الإعفاءات الإضافية المخصصة
-            const customExemptions = document.querySelectorAll('#exemptionsContainer .exemption-item input[type="number"]:nth-child(3)');
-            customExemptions.forEach(input => {
-                if (input.parentElement.querySelector('input[type="checkbox"]').checked) {
-                    totalExemptions += parseFloat(input.value) || 0;
-                }
-            });
-            
-            // حساب الدخل الخاضع للضريبة
-            let taxableIncome = income - totalExemptions;
-            if (taxableIncome < 0) taxableIncome = 0;
-            
-            // حساب الضريبة حسب الشرائح
-            let tax = 0;
-            let remainingIncome = taxableIncome;
-            
-            for (const band of bands) {
-                if (remainingIncome <= 0) break;
-                
-                const bandAmount = Math.min(band.to, remainingIncome) - band.from;
-                if (bandAmount > 0) {
-                    tax += bandAmount * (band.rate / 100);
-                    remainingIncome -= bandAmount;
-                }
-            }
-            
-            // حساب التأمينات الاجتماعية
-            const minSalary = parseFloat(document.getElementById('minSalary').value) || 0;
-            const maxInsurance = parseFloat(document.getElementById('maxInsurance').value) || 0;
-            const employeeRate = parseFloat(document.getElementById('employeeRate').value) || 0;
-            
-            let socialInsurance = 0;
-            if (incomeType === 'monthly') {
-                const monthlySalary = income / 12;
-                if (monthlySalary >= minSalary) {
-                    const insuredSalary = Math.min(monthlySalary, maxInsurance);
-                    socialInsurance = insuredSalary * (employeeRate / 100) * 12;
-                }
-            }
-            
-            // عرض النتائج
-            const resultDiv = document.getElementById('result');
-            const resultContent = document.getElementById('resultContent');
-            resultDiv.style.display = 'block';
-            
-            resultContent.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <h3>تفاصيل المرتب</h3>
-                    <p><strong>المرتب الشامل السنوي:</strong> ${income.toLocaleString()} جنيه</p>
-                    <p><strong>المرتب الشامل الشهري:</strong> ${(income / 12).toLocaleString()} جنيه</p>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <h3>الاستقطاعات</h3>
-                    <p><strong>إجمالي الإعفاءات:</strong> ${totalExemptions.toLocaleString()} جنيه</p>
-                    <p><strong>الدخل الخاضع للضريبة:</strong> ${taxableIncome.toLocaleString()} جنيه</p>
-                    <p><strong>الضريبة السنوية:</strong> ${tax.toLocaleString()} جنيه</p>
-                    <p><strong>الضريبة الشهرية:</strong> ${(tax / 12).toLocaleString()} جنيه</p>
-                    <p><strong>التأمينات الاجتماعية السنوية:</strong> ${socialInsurance.toLocaleString()} جنيه</p>
-                </div>
-                
-                <div style="margin-bottom: 15px;">
-                    <h3>صافي الدخل</h3>
-                    <p><strong>صافي الدخل السنوي بعد الضريبة والتأمينات:</strong> ${(income - tax - socialInsurance).toLocaleString()} جنيه</p>
-                    <p><strong>صافي الدخل الشهري:</strong> ${((income - tax - socialInsurance) / 12).toLocaleString()} جنيه</p>
-                </div>
-                
-                <div>
-                    <h3>تفصيل الشرائح الضريبية</h3>
-                    ${bands.map(band => `
-                        <p>الشريحة من ${band.from.toLocaleString()} إلى ${band.to === 999999999 ? 'ما فوق' : band.to.toLocaleString()} جنيه: نسبة ${band.rate}%</p>
-                    `).join('')}
-                </div>
-            `;
-            
-            // حفظ الإعدادات إذا طلب المستخدم ذلك
-            if (document.getElementById('rememberSettings').checked) {
-                localStorage.setItem('taxCalculatorSettings', JSON.stringify({
-                    bands: bands,
-                    exemptions: {
-                        basic: document.getElementById('basicExemptionAmount').value,
-                        social: document.getElementById('socialExemptionAmount').value,
-                        transport: document.getElementById('transportExemptionAmount').value,
-                        housing: document.getElementById('housingExemptionAmount').value
-                    },
-                    insurance: {
-                        minSalary: document.getElementById('minSalary').value,
-                        maxInsurance: document.getElementById('maxInsurance').value,
-                        employeeRate: document.getElementById('employeeRate').value
-                    }
-                }));
-            }
-        }
-        
-        // تحميل الإعدادات المحفوظة عند بدء التشغيل
-        window.onload = function() {
-            const savedSettings = localStorage.getItem('taxCalculatorSettings');
-            if (savedSettings) {
-                const settings = JSON.parse(savedSettings);
-                
-                // تحميل الشرائح الضريبية
-                if (settings.bands && settings.bands.length > 0) {
-                    document.getElementById('taxBandsContainer').innerHTML = '';
-                    settings.bands.forEach((band, index) => {
-                        if (index < 7) { // نحدد عدد الشرائح الأساسية
-                            const bandElement = document.querySelectorAll('.tax-band')[index];
-                            if (bandElement) {
-                                bandElement.querySelector('.band-from').value = band.from;
-                                bandElement.querySelector('.band-to').value = band.to;
-                                bandElement.querySelector('.band-rate').value = band.rate;
-                            }
-                        } else {
-                            addTaxBand();
-                            const newBand = document.querySelectorAll('.tax-band')[document.querySelectorAll('.tax-band').length - 1];
-                            newBand.querySelector('.band-from').value = band.from;
-                            newBand.querySelector('.band-to').value = band.to;
-                            newBand.querySelector('.band-rate').value = band.rate;
-                        }
-                    });
-                }
-                
-                // تحميل الإعفاءات
-                if (settings.exemptions) {
-                    document.getElementById('basicExemptionAmount').value = settings.exemptions.basic || 15000;
-                    document.getElementById('socialExemptionAmount').value = settings.exemptions.social || 7000;
-                    document.getElementById('transportExemptionAmount').value = settings.exemptions.transport || 7000;
-                    document.getElementById('housingExemptionAmount').value = settings.exemptions.housing || 10000;
-                }
-                
-                // تحميل إعدادات التأمينات
-                if (settings.insurance) {
-                    document.getElementById('minSalary').value = settings.insurance.minSalary || 3000;
-                    document.getElementById('maxInsurance').value = settings.insurance.maxInsurance || 9400;
-                    document.getElementById('employeeRate').value = settings.insurance.employeeRate || 11;
-                }
-                
-                document.getElementById('rememberSettings').checked = true;
-            }
+    <div class="section" style="text-align:center;">
+      <button class="calc-btn" onclick="calculateSalary()"><i class="fas fa-calculator"></i> احسب</button>
+      <button class="details-btn" onclick="toggleDetails()"><i class="fas fa-info-circle"></i> عرض التفاصيل</button>
+    </div>
+
+    <div class="section" id="resultSection" style="display:none;">
+      <h3 id="finalResult"></h3>
+      <div id="detailedBreakdown">
+        <pre id="breakdown"></pre>
+        <canvas id="salaryPieChart"></canvas>
+        <div class="download-buttons">
+          <button class="pdf-btn" onclick="downloadPDF()"><i class="fas fa-file-pdf"></i> تحميل PDF</button>
+          <button class="excel-btn" onclick="downloadExcel()"><i class="fas fa-file-excel"></i> تحميل Excel</button>
+        </div>
+      </div>
+    </div>
+
+<script>
+  // Update salary label based on calculation type
+  document.querySelectorAll('input[name="calcType"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.getElementById('salaryLabel').textContent = 
+        this.value === 'toNet' ? 'الراتب الشهري:' : 'الراتب الصافي:';
+    });
+  });
+
+  // Save settings to localStorage
+  function saveSettings() {
+    if (!document.getElementById('rememberSettings').checked) {
+      localStorage.removeItem('salaryCalculatorSettings');
+      return;
+    }
+
+    const settings = {
+      calcType: document.querySelector('input[name="calcType"]:checked').value,
+      monthlySalary: document.getElementById('monthlySalary').value,
+      insuranceMin: document.getElementById('insuranceMin').value,
+      insuranceMax: document.getElementById('insuranceMax').value,
+      insuranceRate: document.getElementById('insuranceRate').value,
+      exemptions: Array.from(document.querySelectorAll("#exemptionsContainer input")).map(input => input.value),
+      taxBrackets: Array.from(document.querySelectorAll("#taxContainer .tax-row")).map(row => {
+        const inputs = row.querySelectorAll("input");
+        return {
+          min: inputs[0].value,
+          max: inputs[1].value,
+          rate: inputs[2].value
         };
-    </script>
+      })
+    };
+
+    localStorage.setItem('salaryCalculatorSettings', JSON.stringify(settings));
+  }
+
+  // Load settings from localStorage
+  function loadSettings() {
+    const savedSettings = localStorage.getItem('salaryCalculatorSettings');
+    if (!savedSettings) return;
+
+    const settings = JSON.parse(savedSettings);
+    
+    // Set checkbox to remember settings
+    document.getElementById('rememberSettings').checked = true;
+    
+    // Set basic fields
+    document.querySelector(`input[name="calcType"][value="${settings.calcType}"]`).checked = true;
+    document.getElementById('monthlySalary').value = settings.monthlySalary || '';
+    document.getElementById('insuranceMin').value = settings.insuranceMin || '2300';
+    document.getElementById('insuranceMax').value = settings.insuranceMax || '14500';
+    document.getElementById('insuranceRate').value = settings.insuranceRate || '11';
+    
+    // Update salary label based on loaded calcType
+    document.getElementById('salaryLabel').textContent = 
+      settings.calcType === 'toNet' ? 'الراتب الشهري:' : 'الراتب الصافي:';
+    
+    // Load exemptions
+    const exemptionsContainer = document.getElementById('exemptionsContainer');
+    exemptionsContainer.innerHTML = ''; // Clear existing
+    
+    if (settings.exemptions && settings.exemptions.length > 0) {
+      settings.exemptions.forEach(exemption => {
+        const row = document.createElement('div');
+        row.className = 'exemption-row';
+        row.innerHTML = `<input type="number" placeholder="الإعفاء السنوي (جنيه)" value="${exemption}" /><span class="annual-label">سنوية</span>`;
+        exemptionsContainer.appendChild(row);
+      });
+    } else {
+      // Default exemption if none saved
+      const row = document.createElement('div');
+      row.className = 'exemption-row';
+      row.innerHTML = `<input type="number" placeholder="الإعفاء السنوي (جنيه)" value="15000" /><span class="annual-label">سنوية</span>`;
+      exemptionsContainer.appendChild(row);
+    }
+    
+    // Load tax brackets
+    const taxContainer = document.getElementById('taxContainer');
+    taxContainer.innerHTML = ''; // Clear existing
+    
+    if (settings.taxBrackets && settings.taxBrackets.length > 0) {
+      settings.taxBrackets.forEach(bracket => {
+        const row = document.createElement('div');
+        row.className = 'tax-row';
+        row.innerHTML = `<input type="number" placeholder="الحد الأدنى" value="${bracket.min}" /><input type="number" placeholder="الحد الأقصى" value="${bracket.max}" /><input type="number" placeholder="نسبة الاستقطاع %" value="${bracket.rate}" />`;
+        taxContainer.appendChild(row);
+      });
+    } else {
+      // Default tax brackets if none saved
+      const defaultBrackets = [
+        { min: 0, max: 15000, rate: 0 },
+        { min: 15001, max: 30000, rate: 10 },
+        { min: 30001, max: 45000, rate: 15 },
+        { min: 45001, max: 60000, rate: 20 },
+        { min: 60001, max: 200000, rate: 22.5 },
+        { min: 200001, max: 9999999, rate: 27.5 }
+      ];
+      
+      defaultBrackets.forEach(bracket => {
+        const row = document.createElement('div');
+        row.className = 'tax-row';
+        row.innerHTML = `<input type="number" placeholder="الحد الأدنى" value="${bracket.min}" /><input type="number" placeholder="الحد الأقصى" value="${bracket.max}" /><input type="number" placeholder="نسبة الاستقطاع %" value="${bracket.rate}" />`;
+        taxContainer.appendChild(row);
+      });
+    }
+  }
+
+  // Save settings when any input changes
+  document.addEventListener('input', function() {
+    if (document.getElementById('rememberSettings').checked) {
+      saveSettings();
+    }
+  });
+
+  // Save settings when radio buttons change
+  document.querySelectorAll('input[name="calcType"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      if (document.getElementById('rememberSettings').checked) {
+        saveSettings();
+      }
+    });
+  });
+
+  // Save settings when checkbox state changes
+  document.getElementById('rememberSettings').addEventListener('change', function() {
+    if (this.checked) {
+      saveSettings();
+    } else {
+      localStorage.removeItem('salaryCalculatorSettings');
+    }
+  });
+
+  function addTaxBracket() {
+    const row = document.createElement('div');
+    row.className = 'tax-row';
+    row.innerHTML = `<input type="number" placeholder="الحد الأدنى" /><input type="number" placeholder="الحد الأقصى" /><input type="number" placeholder="نسبة الاستقطاع %" />`;
+    document.getElementById('taxContainer').appendChild(row);
+    
+    // Add event listener to new inputs
+    row.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', function() {
+        if (document.getElementById('rememberSettings').checked) {
+          saveSettings();
+        }
+      });
+    });
+  }
+
+  function addExemptionField() {
+    const row = document.createElement('div');
+    row.className = 'exemption-row';
+    row.innerHTML = `<input type="number" placeholder="الإعفاء السنوي (جنيه)" /><span class="annual-label">سنوية</span>`;
+    document.getElementById('exemptionsContainer').appendChild(row);
+    
+    // Add event listener to new input
+    row.querySelector('input').addEventListener('input', function() {
+      if (document.getElementById('rememberSettings').checked) {
+        saveSettings();
+      }
+    });
+  }
+
+  function toggleDetails() {
+    const detail = document.getElementById('detailedBreakdown');
+    detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function toggleAdvancedSettings() {
+    const advanced = document.getElementById('advancedSettings');
+    advanced.style.display = advanced.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function calculateSalary() {
+    saveSettings(); // Save settings before calculation
+    
+    const type = document.querySelector('input[name="calcType"]:checked').value;
+    const salaryInput = parseFloat(document.getElementById("monthlySalary").value);
+    
+    const insuranceMin = parseFloat(document.getElementById("insuranceMin").value);
+    const insuranceMax = parseFloat(document.getElementById("insuranceMax").value);
+    const insuranceRate = parseFloat(document.getElementById("insuranceRate").value) / 100;
+
+    const exemptions = Array.from(document.querySelectorAll("#exemptionsContainer input")).map(input => parseFloat(input.value) || 0);
+    const totalYearlyExemption = exemptions.reduce((sum, val) => sum + val, 0);
+
+    const taxBrackets = Array.from(document.querySelectorAll("#taxContainer .tax-row")).map(row => {
+      const inputs = row.querySelectorAll("input");
+      return {
+        min: parseFloat(inputs[0].value),
+        max: parseFloat(inputs[1].value),
+        rate: parseFloat(inputs[2].value) / 100
+      };
+    });
+
+    let salary, insuranceDeduction, monthlyTax, net, gross;
+    let details = [];
+
+    if (type === "toNet") {
+      // Calculate from gross to net
+      salary = salaryInput;
+      const baseForInsurance = Math.max(insuranceMin, Math.min(salary, insuranceMax));
+      insuranceDeduction = baseForInsurance * insuranceRate;
+
+      let taxable = (salary * 12) - totalYearlyExemption;
+      let yearlyTax = 0;
+
+      for (let bracket of taxBrackets) {
+        if (taxable > bracket.min) {
+          const upper = Math.min(taxable, bracket.max);
+          const amount = (upper - bracket.min) * bracket.rate;
+          yearlyTax += amount;
+          details.push(`من ${bracket.min} إلى ${upper} بنسبة ${(bracket.rate * 100).toFixed(1)}% = ${amount.toFixed(2)} جنيه سنوياً`);
+        }
+      }
+
+      monthlyTax = yearlyTax / 12;
+      net = salary - insuranceDeduction - monthlyTax;
+      gross = salary;
+    } else {
+      // Calculate from net to gross (reverse calculation)
+      net = salaryInput;
+      
+      // We need to estimate the gross salary through iteration
+      let estimatedGross = net;
+      let iterations = 0;
+      let calculatedNet = 0;
+      
+      do {
+        estimatedGross += 1;
+        const baseForInsurance = Math.max(insuranceMin, Math.min(estimatedGross, insuranceMax));
+        insuranceDeduction = baseForInsurance * insuranceRate;
+
+        let taxable = (estimatedGross * 12) - totalYearlyExemption;
+        let yearlyTax = 0;
+
+        for (let bracket of taxBrackets) {
+          if (taxable > bracket.min) {
+            const upper = Math.min(taxable, bracket.max);
+            yearlyTax += (upper - bracket.min) * bracket.rate;
+          }
+        }
+
+        monthlyTax = yearlyTax / 12;
+        calculatedNet = estimatedGross - insuranceDeduction - monthlyTax;
+        iterations++;
+        
+        if (iterations > 1000) break; // Safety net to prevent infinite loops
+      } while (calculatedNet < net && iterations < 1000);
+
+      gross = estimatedGross;
+      salary = gross;
+      
+      // Recalculate with final gross to get accurate details
+      const baseForInsurance = Math.max(insuranceMin, Math.min(gross, insuranceMax));
+      insuranceDeduction = baseForInsurance * insuranceRate;
+
+      let taxable = (gross * 12) - totalYearlyExemption;
+      let yearlyTax = 0;
+      details = [];
+
+      for (let bracket of taxBrackets) {
+        if (taxable > bracket.min) {
+          const upper = Math.min(taxable, bracket.max);
+          const amount = (upper - bracket.min) * bracket.rate;
+          yearlyTax += amount;
+          details.push(`من ${bracket.min} إلى ${upper} بنسبة ${(bracket.rate * 100).toFixed(1)}% = ${amount.toFixed(2)} جنيه سنوياً`);
+        }
+      }
+
+      monthlyTax = yearlyTax / 12;
+    }
+
+    const netRounded = Math.round(net);
+    const grossRounded = Math.round(gross);
+
+    document.getElementById("resultSection").style.display = "block";
+    document.getElementById("finalResult").textContent =
+      type === "toNet" ? `صافي المرتب: ${netRounded} جنيه` : `المرتب الشامل: ${grossRounded} جنيه`;
+
+    const breakdown = type === "toNet" 
+      ? `المرتب الشامل: ${gross.toFixed(2)}\nاستقطاع التأمينات: ${insuranceDeduction.toFixed(2)}\nالضريبة الشهرية: ${monthlyTax.toFixed(2)}\nالإعفاءات السنوية: ${totalYearlyExemption.toFixed(2)}\n\nتفصيل الضريبة:\n${details.join("\n")}`
+      : `المرتب الصافي المطلوب: ${net.toFixed(2)}\nالمرتب الشامل: ${gross.toFixed(2)}\nاستقطاع التأمينات: ${insuranceDeduction.toFixed(2)}\nالضريبة الشهرية: ${monthlyTax.toFixed(2)}\nالإعفاءات السنوية: ${totalYearlyExemption.toFixed(2)}\n\nتفصيل الضريبة:\n${details.join("\n")}`;
+    
+    document.getElementById("breakdown").innerText = breakdown;
+
+    const ctx = document.getElementById('salaryPieChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: type === "toNet" ? ['صافي', 'تأمينات', 'ضريبة'] : ['شامل', 'تأمينات', 'ضريبة'],
+        datasets: [{
+          data: type === "toNet" 
+            ? [net, insuranceDeduction, monthlyTax] 
+            : [gross, insuranceDeduction, monthlyTax],
+          backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+        }]
+      }
+    });
+  }
+
+  function downloadPDF() {
+    const breakdown = document.getElementById("breakdown").innerText;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: 'p',
+      unit: 'mm',
+      format: 'a4'
+    });
+    
+    // Add Arabic font support (using a standard font that supports Arabic)
+    pdf.setFont('Times', 'normal');
+    pdf.setFontSize(12);
+    
+    // Split text into lines and handle RTL
+    const lines = pdf.splitTextToSize(breakdown, 180);
+    
+    // Start from top right (for RTL)
+    let y = 10;
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    
+    for (let i = 0; i < lines.length; i++) {
+      if (y > 280) { // Near bottom of page
+        pdf.addPage();
+        y = 10;
+      }
+      
+      // Calculate text width to position it correctly for RTL
+      const textWidth = pdf.getStringUnitWidth(lines[i]) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+      const x = pageWidth - 10 - textWidth;
+      
+      pdf.text(lines[i], x, y);
+      y += 7;
+    }
+    
+    pdf.save("تفاصيل_المرتب.pdf");
+  }
+
+  function downloadExcel() {
+    const breakdown = document.getElementById("breakdown").innerText;
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([["التفاصيل"], ...breakdown.split("\n").map(line => [line])]);
+    XLSX.utils.book_append_sheet(wb, ws, "الراتب");
+    XLSX.writeFile(wb, "تفاصيل_المرتب.xlsx");
+  }
+
+  // Load saved settings when page loads
+  window.addEventListener('load', loadSettings);
+</script>
 </body>
-
- <footer style="
-    text-align: center;
-    margin-top: 30px;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-">
-    <p style="
-        margin-bottom: 10px;
-        color: #333;
-        font-size: 16px;
-    ">يمكنك زيارة موقعي من هنا</p>
-    <nav>
-        <a href="https://mostafabond.github.io/HRNINJA/index-ar.html" style="
-            display: inline-block;
-            padding: 8px 20px;
-            background-color: #3498db;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        ">HR Ninja</a>
-    </nav>
-</footer>
-
 </html>
