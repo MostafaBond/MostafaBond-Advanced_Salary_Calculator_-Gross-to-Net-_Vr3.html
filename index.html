@@ -599,7 +599,7 @@
       const baseForInsurance = Math.max(insuranceMin, Math.min(salary, insuranceMax));
       insuranceDeduction = baseForInsurance * insuranceRate;
 
-      let taxable = (salary * 12) - totalYearlyExemption;
+      let taxable = (salary * 12 - insuranceDeduction * 12) - totalYearlyExemption;
       let yearlyTax = 0;
 
       for (let bracket of taxBrackets) {
