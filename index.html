@@ -317,7 +317,7 @@
   <div class="container">
     <h1>حاسبة المرتب - الشامل والصافي</h1>
     <br>
-<h3>بناء على قانون الضرائب رقم 7 لعام 2024 و حدود التأمينات الأجتماعية لعام 2025 و يمكن تعديل جميع هذه الأرقام من إعدادت المتقدمة</h3>
+    <h3>بناء على قانون الضرائب رقم 7 لعام 2024 و حدود التأمينات الأجتماعية لعام 2025 و يمكن تعديل جميع هذه الأرقام من إعدادت المتقدمة</h3>
 
     <div class="section">
       <label><input type="radio" name="calcType" value="toNet" checked> من الشامل إلى الصافي</label>
@@ -350,16 +350,16 @@
 
       <div class="section">
         <h3>الإعفاءات</h3>
-             <div id="exemptionsContainer">
-  <div class="exemption-row">
-    <input type="number" placeholder="الإعفاء السنوي (جنيه)" value="15000" />
-    <span class="annual-label">سنوية</span>
-  </div>
-  <div class="exemption-row">
-    <input type="number" placeholder="الإعفاء السنوي (جنيه)" value="9000" />
-    <span class="annual-label">سنوية</span>
-  </div>
-</div>
+        <div id="exemptionsContainer">
+          <div class="exemption-row">
+            <input type="number" placeholder="الإعفاء السنوي (جنيه)" value="15000" />
+            <span class="annual-label">سنوية</span>
+          </div>
+          <div class="exemption-row">
+            <input type="number" placeholder="الإعفاء السنوي (جنيه)" value="9000" />
+            <span class="annual-label">سنوية</span>
+          </div>
+        </div>
         <button class="add-btn" onclick="addExemptionField()"><i class="fas fa-plus"></i> إضافة إعفاء</button>
       </div>
 
@@ -438,23 +438,18 @@
 
     const settings = JSON.parse(savedSettings);
     
-    // Set checkbox to remember settings
     document.getElementById('rememberSettings').checked = true;
-    
-    // Set basic fields
     document.querySelector(`input[name="calcType"][value="${settings.calcType}"]`).checked = true;
     document.getElementById('monthlySalary').value = settings.monthlySalary || '';
     document.getElementById('insuranceMin').value = settings.insuranceMin || '2300';
     document.getElementById('insuranceMax').value = settings.insuranceMax || '14500';
     document.getElementById('insuranceRate').value = settings.insuranceRate || '11';
     
-    // Update salary label based on loaded calcType
     document.getElementById('salaryLabel').textContent = 
       settings.calcType === 'toNet' ? 'الراتب الشهري:' : 'الراتب الصافي:';
     
-    // Load exemptions
     const exemptionsContainer = document.getElementById('exemptionsContainer');
-    exemptionsContainer.innerHTML = ''; // Clear existing
+    exemptionsContainer.innerHTML = '';
     
     if (settings.exemptions && settings.exemptions.length > 0) {
       settings.exemptions.forEach(exemption => {
@@ -464,16 +459,14 @@
         exemptionsContainer.appendChild(row);
       });
     } else {
-      // Default exemption if none saved
       const row = document.createElement('div');
       row.className = 'exemption-row';
       row.innerHTML = `<input type="number" placeholder="الإعفاء السنوي (جنيه)" value="15000" /><span class="annual-label">سنوية</span>`;
       exemptionsContainer.appendChild(row);
     }
     
-    // Load tax brackets
     const taxContainer = document.getElementById('taxContainer');
-    taxContainer.innerHTML = ''; // Clear existing
+    taxContainer.innerHTML = '';
     
     if (settings.taxBrackets && settings.taxBrackets.length > 0) {
       settings.taxBrackets.forEach(bracket => {
@@ -483,7 +476,6 @@
         taxContainer.appendChild(row);
       });
     } else {
-      // Default tax brackets if none saved
       const defaultBrackets = [
         { min: 0, max: 40000, rate: 0 },
         { min: 40001, max: 55000, rate: 10 },
@@ -503,14 +495,13 @@
     }
   }
 
-  // Save settings when any input changes
+  // Event listeners for saving settings
   document.addEventListener('input', function() {
     if (document.getElementById('rememberSettings').checked) {
       saveSettings();
     }
   });
 
-  // Save settings when radio buttons change
   document.querySelectorAll('input[name="calcType"]').forEach(radio => {
     radio.addEventListener('change', function() {
       if (document.getElementById('rememberSettings').checked) {
@@ -519,7 +510,6 @@
     });
   });
 
-  // Save settings when checkbox state changes
   document.getElementById('rememberSettings').addEventListener('change', function() {
     if (this.checked) {
       saveSettings();
@@ -534,7 +524,6 @@
     row.innerHTML = `<input type="number" placeholder="الحد الأدنى" /><input type="number" placeholder="الحد الأقصى" /><input type="number" placeholder="نسبة الاستقطاع %" />`;
     document.getElementById('taxContainer').appendChild(row);
     
-    // Add event listener to new inputs
     row.querySelectorAll('input').forEach(input => {
       input.addEventListener('input', function() {
         if (document.getElementById('rememberSettings').checked) {
@@ -550,7 +539,6 @@
     row.innerHTML = `<input type="number" placeholder="الإعفاء السنوي (جنيه)" /><span class="annual-label">سنوية</span>`;
     document.getElementById('exemptionsContainer').appendChild(row);
     
-    // Add event listener to new input
     row.querySelector('input').addEventListener('input', function() {
       if (document.getElementById('rememberSettings').checked) {
         saveSettings();
@@ -569,7 +557,7 @@
   }
 
   function calculateSalary() {
-    saveSettings(); // Save settings before calculation
+    saveSettings();
     
     const type = document.querySelector('input[name="calcType"]:checked').value;
     const salaryInput = parseFloat(document.getElementById("monthlySalary").value);
@@ -600,6 +588,7 @@
       insuranceDeduction = baseForInsurance * insuranceRate;
 
       let taxable = (salary * 12 - insuranceDeduction * 12) - totalYearlyExemption;
+
       let yearlyTax = 0;
 
       for (let bracket of taxBrackets) {
@@ -618,17 +607,21 @@
       // Calculate from net to gross (reverse calculation)
       net = salaryInput;
       
-      // We need to estimate the gross salary through iteration
-      let estimatedGross = net;
+      // We'll use binary search for more accurate and efficient calculation
+      let low = net;
+      let high = net * 2; // Start with a reasonable upper bound
+      let tolerance = 0.01; // Acceptable difference
+      let bestGuess = 0;
       let iterations = 0;
-      let calculatedNet = 0;
-      
-      do {
-        estimatedGross += 1;
-        const baseForInsurance = Math.max(insuranceMin, Math.min(estimatedGross, insuranceMax));
-        insuranceDeduction = baseForInsurance * insuranceRate;
+      const maxIterations = 100;
 
-        let taxable = (estimatedGross * 12) - totalYearlyExemption;
+      while (iterations < maxIterations) {
+        let guess = (low + high) / 2;
+        
+        const baseForInsurance = Math.max(insuranceMin, Math.min(guess, insuranceMax));
+        const insurance = baseForInsurance * insuranceRate;
+        
+        let taxable = (guess * 12 - insurance * 12) - totalYearlyExemption;
         let yearlyTax = 0;
 
         for (let bracket of taxBrackets) {
@@ -638,21 +631,29 @@
           }
         }
 
-        monthlyTax = yearlyTax / 12;
-        calculatedNet = estimatedGross - insuranceDeduction - monthlyTax;
-        iterations++;
-        
-        if (iterations > 1000) break; // Safety net to prevent infinite loops
-      } while (calculatedNet < net && iterations < 1000);
+        const monthlyTax = yearlyTax / 12;
+        const calculatedNet = guess - insurance - monthlyTax;
 
-      gross = estimatedGross;
+        if (Math.abs(calculatedNet - net) < tolerance) {
+          bestGuess = guess;
+          break;
+        } else if (calculatedNet < net) {
+          low = guess;
+        } else {
+          high = guess;
+        }
+
+        iterations++;
+      }
+
+      gross = bestGuess || low;
       salary = gross;
       
       // Recalculate with final gross to get accurate details
       const baseForInsurance = Math.max(insuranceMin, Math.min(gross, insuranceMax));
       insuranceDeduction = baseForInsurance * insuranceRate;
 
-      let taxable = (gross * 12) - totalYearlyExemption;
+      let taxable = (gross * 12 - insuranceDeduction * 12) - totalYearlyExemption;
       let yearlyTax = 0;
       details = [];
 
@@ -668,12 +669,12 @@
       monthlyTax = yearlyTax / 12;
     }
 
-    const netRounded = Math.round(net);
-    const grossRounded = Math.round(gross);
+    const netRounded = Math.round(net * 100) / 100;
+    const grossRounded = Math.round(gross * 100) / 100;
 
     document.getElementById("resultSection").style.display = "block";
     document.getElementById("finalResult").textContent =
-      type === "toNet" ? `صافي المرتب: ${netRounded} جنيه` : `المرتب الشامل: ${grossRounded} جنيه`;
+      type === "toNet" ? `صافي المرتب: ${netRounded.toLocaleString()} جنيه` : `المرتب الشامل: ${grossRounded.toLocaleString()} جنيه`;
 
     const breakdown = type === "toNet" 
       ? `المرتب الشامل: ${gross.toFixed(2)}\nاستقطاع التأمينات: ${insuranceDeduction.toFixed(2)}\nالضريبة الشهرية: ${monthlyTax.toFixed(2)}\nالإعفاءات السنوية: ${totalYearlyExemption.toFixed(2)}\n\nتفصيل الضريبة:\n${details.join("\n")}`
@@ -682,7 +683,10 @@
     document.getElementById("breakdown").innerText = breakdown;
 
     const ctx = document.getElementById('salaryPieChart').getContext('2d');
-    new Chart(ctx, {
+    if (window.salaryChart) {
+      window.salaryChart.destroy();
+    }
+    window.salaryChart = new Chart(ctx, {
       type: 'pie',
       data: {
         labels: type === "toNet" ? ['صافي', 'تأمينات', 'ضريبة'] : ['شامل', 'تأمينات', 'ضريبة'],
@@ -692,6 +696,21 @@
             : [gross, insuranceDeduction, monthlyTax],
           backgroundColor: ['#28a745', '#ffc107', '#dc3545']
         }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom',
+            rtl: true
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `${context.label}: ${context.raw.toFixed(2)} جنيه`;
+              }
+            }
+          }
+        }
       }
     });
   }
@@ -705,24 +724,20 @@
       format: 'a4'
     });
     
-    // Add Arabic font support (using a standard font that supports Arabic)
     pdf.setFont('Times', 'normal');
     pdf.setFontSize(12);
     
-    // Split text into lines and handle RTL
     const lines = pdf.splitTextToSize(breakdown, 180);
     
-    // Start from top right (for RTL)
     let y = 10;
     const pageWidth = pdf.internal.pageSize.getWidth();
     
     for (let i = 0; i < lines.length; i++) {
-      if (y > 280) { // Near bottom of page
+      if (y > 280) {
         pdf.addPage();
         y = 10;
       }
       
-      // Calculate text width to position it correctly for RTL
       const textWidth = pdf.getStringUnitWidth(lines[i]) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
       const x = pageWidth - 10 - textWidth;
       
@@ -752,7 +767,7 @@
     background-color: #f5f5f5;
     border-radius: 8px;
     font-family: Arial, sans-serif;
-">
+  ">
     <p style="
         margin-bottom: 10px;
         color: #333;
@@ -770,5 +785,5 @@
             transition: background-color 0.3s;
         ">HR Ninja</a>
     </nav>
-</footer>
+  </footer>
 </html>
